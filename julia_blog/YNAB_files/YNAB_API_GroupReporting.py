@@ -38,7 +38,7 @@ ALL_month_cats.rename(columns = {'name_y': 'category_group_name','name_x':'categ
 
 
 current_month_cats = ALL_month_cats.loc[ALL_month_cats['month']==this_month]
-user_group_input = pd.merge(current_month_cats, user_input, on='category_id')
+user_group_input = pd.merge(current_month_cats, user_input, how='left', on='category_name')
 
 #user_group_input = user_group_input.groupby(['category_group_name'], as_index=False).mean()
 user_group_input = user_group_input.groupby(['category_group_name'], as_index=False).agg({'budgeted':'sum',
@@ -61,7 +61,7 @@ ALL_month_cats = ALL_month_cats.loc[~ALL_month_cats['category_group_name'].isin(
 ALL_active_month_cats = ALL_month_cats.loc[ALL_month_cats['month'].isin(active_months['month'].to_list())]
 
 #### Create new category_name, ID, group_ID using savings
-ALL_active_month_savings = pd.merge(ALL_active_month_cats, user_input, on='category_id')
+ALL_active_month_savings = pd.merge(ALL_active_month_cats, user_input,how='left', on='category_name')
 ALL_active_month_savings['budgeted'] = ALL_active_month_savings['budgeted'] * ALL_active_month_savings['savings_contr']
 ALL_active_month_savings['activity'] = ALL_active_month_savings['activity'] * ALL_active_month_savings['savings_contr']
 ALL_active_month_savings = ALL_active_month_savings.groupby(['month'], as_index=False).sum()
@@ -132,7 +132,7 @@ group_analysis.drop('index',axis=1,inplace=True)
 category_analysis = ALL_active_month_cats.groupby(['category_name','category_id'], as_index=False).sum()
 category_analysis['spending_diff_mom'] = np.where(category_analysis['spending_last_month']==0,0,(category_analysis['spending_this_month']/category_analysis['spending_last_month']-1)*100)
 category_analysis['budgeting_diff_mom'] = np.where(category_analysis['budgeting_last_month']==0,0,(category_analysis['budgeting_this_month']/category_analysis['budgeting_last_month']-1)*100)
-category_analysis = pd.merge(category_analysis, user_input, on='category_id')
+category_analysis = pd.merge(category_analysis, user_input, how='left', on='category_name')
 category_analysis['ideal_contribution_perc'] = category_analysis['ideal_contribution']/category_analysis['ideal_contribution'].sum()*100
 category_analysis['spending_3m_diff'] = (category_analysis['spending_this_month']/((category_analysis['spending_last_month']+category_analysis['spending_this_month-1']+category_analysis['spending_this_month-2'])/3)-1)*100
 category_analysis['budgeting_3m_diff'] = (category_analysis['budgeting_this_month']/((category_analysis['budgeting_last_month']+category_analysis['budgeting_this_month-1']+category_analysis['budgeting_this_month-2'])/3)-1)*100
