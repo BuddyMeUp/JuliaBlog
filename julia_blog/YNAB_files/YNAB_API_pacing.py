@@ -40,9 +40,11 @@ accounts = pd.json_normalize(budget, record_path=['data','budget','accounts'])
 
 path_parent = os.path.dirname(os.getcwd())
 
-
-user_input = pd.read_excel(path_parent+"/working_project/julia_blog/YNAB_files/user_input.xlsx", index_col=0)
-user_input.drop(['category_name','category_group_id','category_group_name'],axis=1,inplace=True)
+# user input is currently very manual, een contains IDs that are only visible through the API
+# this process should be changed to work in a view where the category name/category group name is shown and instructons are given for how to fill in the different fields
+# this is then saved in a SQLAlchemy database, not in an excel
+user_input = pd.read_excel(path_parent+"/JuliaBlog/julia_blog/YNAB_files/user_input.xlsx", index_col=0)
+user_input.drop(['category_id','category_group_id','category_group_name'],axis=1,inplace=True)
 
 
 
@@ -63,7 +65,7 @@ current_month_cats = ALL_month_cats.loc[ALL_month_cats['data.budget.months.month
 current_month_cats = pd.merge(current_month_cats, category_groups, left_on='category_group_id', right_on='id')
 current_month_cats.drop(['hidden_y','hidden_x','original_category_group_id','note','goal_type','goal_creation_month','goal_target_month','goal_percentage_complete','deleted_x','deleted_y','id_y'],axis=1,inplace=True)
 current_month_cats.rename(columns = {'name_y': 'category_group_name','name_x':'category_name','id_x':'category_id','id_y':'category_group_id'}, inplace = True)
-current_month_cats = pd.merge(current_month_cats, user_input, on='category_id')
+current_month_cats = pd.merge(current_month_cats, user_input, how='left',on='category_name')
 
 ### Calculated fields & Cleanup for information of current Months Category Info
 current_month_cats['balance'] = current_month_cats['balance']/1000
@@ -137,10 +139,11 @@ pacing_report['month_progress2'] = pacing_report['month_progress']*100
 pacing_report['paced_ideal_spend'] = pacing_report['paced_ideal_spend']
 pacing_report.sort_values(by=['cat_group_order'],inplace=True)
 
+
+
 pacing_report['month_progress'] = ''
 pacing_report['month_progress'].iloc[[0]] = pacing_report['month_progress2'][0]
 pacing_report.drop(['month_progress2','cat_group_order'], axis=1, inplace=True)
-#pacing_report.drop('cat_group_order',axis=1,inplace=True)
 pacing_report.reset_index(inplace=True)
 pacing_report.drop('index',axis=1,inplace=True)
 
