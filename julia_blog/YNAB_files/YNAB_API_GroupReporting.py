@@ -145,7 +145,7 @@ category_analysis.drop(['category_id','cat_group_order','savings_contr','fix_cat
 category_analysis.reset_index(inplace=True)
 category_analysis.fillna(0,inplace=True)
 category_analysis.drop('index',axis=1,inplace=True)
-
+#
 # output = emoji_pattern.sub(r'', group_analysis.to_html())
 # output = output.replace(u'\U0001F3A2','')
 # output = output.replace(u'\U0001f7e1','')
@@ -226,6 +226,6 @@ category_analysis.drop('index',axis=1,inplace=True)
 # html_bar('ideal_contribution_perc')
 # html_bar('spending_3m_diff')
 # html_bar('budgeting_3m_diff')
-
-
+#
+#
 
