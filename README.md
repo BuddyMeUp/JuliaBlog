@@ -1,5 +1,10 @@
 # JuliaBlog
 
+### Fixes
+* budget/reporting to work on user_id
+* budget/reporting db.commit currently broken
+* deal with all emojis
+
 ### To dos
 * add user input to the db
 * add deskop file to a database do change based on user_id
@@ -7,10 +12,13 @@
 * deal with new categories coming in
 add view to determine token and budget_id per user
 
-### Fixes
-* budget/reporting to work on user_id
-* budget/reporting db.commit currently broken
-* deal with all emojis
+Logic: 
+* when selecting budgeting: 
+* if a budget_id and token is saved against the current user: 
+* allow to add a budget_id but otherwise present options directly 
+* otherwise ask to enter the 2 info first (until Oauth can be launched)
+* pop up to list all categories, separating those that don't have user_input against them and prompt an input
+
 
 ### Future functionalities - Budgeting
 * category group lab - allow for changing of category groups and adding categories to different groups and save those options

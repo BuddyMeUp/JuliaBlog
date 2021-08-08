@@ -84,8 +84,9 @@ class BlogPost(db.Model ):
 
 class budget_group_analysis(db.Model):
     users = db.relationship(User)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
     category_group_name = db.Column(db.String(64),nullable=False,unique=True,index=True,primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     spending_this_month = db.Column(db.Float)
     spending_this_month_perc = db.Column(db.Float)
     spending_last_month = db.Column(db.Float)
@@ -125,8 +126,9 @@ class budget_group_analysis(db.Model):
 
 class budget_category_analysis(db.Model):
     users = db.relationship(User)
-    user_id_number = db.Column(db.Integer, db.ForeignKey('users.id'))
+
     category_name = db.Column(db.String(64),nullable=False,unique=True,index=True,primary_key=True)
+    user_id_number = db.Column(db.Integer, db.ForeignKey('users.id'))
     spending_this_month = db.Column(db.Float)
     spending_this_month_perc = db.Column(db.Float)
     spending_last_month = db.Column(db.Float)
