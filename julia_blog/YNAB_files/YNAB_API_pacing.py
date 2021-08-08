@@ -16,6 +16,7 @@ pd.options.mode.chained_assignment = None
 pd.set_option('display.width', 1000)
 ### Calling API and authenticating
 
+
 # saving sensitive info on the desktop
 desktop = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
 filename = desktop + "/details.txt"
@@ -44,6 +45,7 @@ path_parent = os.path.dirname(os.getcwd())
 # this process should be changed to work in a view where the category name/category group name is shown and instructons are given for how to fill in the different fields
 # this is then saved in a SQLAlchemy database, not in an excel
 user_input = pd.read_excel(path_parent+"/JuliaBlog/julia_blog/YNAB_files/user_input.xlsx", index_col=0)
+#user_input = pd.read_excel(path_parent+"/YNAB_files/user_input.xlsx", index_col=0)
 user_input.drop(['category_id','category_group_id','category_group_name'],axis=1,inplace=True)
 
 
@@ -91,7 +93,6 @@ current_month_pacing['daily_amount_left'] = np.where(current_month_pacing['max_a
 current_month_pacing['daily_amount_target'] = np.where(current_month_pacing['max_amount']>0,0,current_month_pacing['daily_amount_target'])
 current_month_pacing.sort_values(by=['max_amount','pacing_perc'],inplace=True)
 current_month_pacing.reset_index(inplace=True)
-
 
 ## average transaction value per catgory to estimate avg transactions
 transactions.sort_values(by=['date'],ascending=False,inplace=True)
@@ -165,17 +166,17 @@ emoji_pattern = re.compile("["
         u"\u200d"
         u"\u2640-\u2642"
         "]+", flags=re.UNICODE)
-# output = emoji_pattern.sub(r'', pacing_report.to_html())
-# output = output.replace(u'\U0001F3A2','')
-# output = output.replace(u'\U0001f7e1','')
-# output = output.replace(u'\U0001f9f7','')
-# output = output.replace(u'\U0001f9af','')
-# output = output.replace(u'\u26ea','')
-# output = output.replace(u'\u2016','')
-# output = output.replace(u'\U0001f7e2','')
-# output = output.replace(u'\U0001f3a2','')
-# output = output.replace('class="dataframe"','class="table table-striped table-hover')
-# path_parent = os.path.dirname(os.getcwd())
+output = emoji_pattern.sub(r'', pacing_report.to_html())
+output = output.replace(u'\U0001F3A2','')
+output = output.replace(u'\U0001f7e1','')
+output = output.replace(u'\U0001f9f7','')
+output = output.replace(u'\U0001f9af','')
+output = output.replace(u'\u26ea','')
+output = output.replace(u'\u2016','')
+output = output.replace(u'\U0001f7e2','')
+output = output.replace(u'\U0001f3a2','')
+output = output.replace('class="dataframe"','class="table table-striped table-hover')
+path_parent = os.path.dirname(os.getcwd())
 # text_file = open(path_parent+"/templates/YNAB_API_pacing.html", "w")
 # text_file.write(output)
 # text_file.close()

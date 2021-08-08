@@ -4,6 +4,8 @@ import os
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_mail import Mail
+from os import environ
+from sqlalchemy import create_engine, Integer, Text, String, DateTime
 
 app= Flask (__name__)
 
@@ -12,7 +14,8 @@ app.config['SECRET_KEY'] = 'mysecret'
 ###### DB Setup#####
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir,'data.sqlight')
-
+#db_uri = environ.get('SQLALCHEMY_DATABASE_URI')
+engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'], echo=True)
 app.config['SQLALCHEMY_TRACK_MODIFCATIONS'] = False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 mail = Mail(app)

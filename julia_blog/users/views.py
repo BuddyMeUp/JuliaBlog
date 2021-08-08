@@ -14,18 +14,18 @@ def logout():
     logout_user()
     return redirect(url_for("core.index"))
 
-# @users.route("/register",methods = ['GET','POST'])
-# def register():
-#     form = RegistrationForm()
-#
-#     if form.validate_on_submit():
-#         user = User(email=form.email.data,
-#                     password = form.password.data)
-#         db.session.add(user)
-#         db.session.commit()
-#         flash('Thanks for registering!')
-#         return redirect(url_for("users.login"))
-#     return render_template('register.html',form=form)
+@users.route("/register",methods = ['GET','POST'])
+def register():
+    form = RegistrationForm()
+
+    if form.validate_on_submit():
+        user = User(email=form.email.data,
+                    password = form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Thanks for registering!')
+        return redirect(url_for("users.login"))
+    return render_template('register.html',form=form)
 
 @users.route('/login',methods = ['GET','POST'])
 def login():
