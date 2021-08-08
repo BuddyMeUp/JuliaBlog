@@ -10,6 +10,7 @@ import os
 from dateutil.relativedelta import relativedelta
 import requests
 from julia_blog.YNAB_files.YNAB_API_pacing import budget,categories,transactions,months,category_groups,emoji_pattern,user_input
+
 import webbrowser
 pd.options.display.max_rows = 99
 pd.options.display.max_columns = 999

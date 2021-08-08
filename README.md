@@ -2,8 +2,9 @@
 
 ### Fixes
 * budget/reporting to work on user_id
-* budget/reporting db.commit currently broken
+* budget/reporting db.commit currently broken - currently using fix files.
 * deal with all emojis
+* should the data sit in databases or pandas df (& "manually" created html files)?
 
 ### To dos
 * add user input to the db

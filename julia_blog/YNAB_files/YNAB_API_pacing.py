@@ -16,6 +16,7 @@ pd.options.mode.chained_assignment = None
 pd.set_option('display.width', 1000)
 ### Calling API and authenticating
 
+
 # saving sensitive info on the desktop
 desktop = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
 filename = desktop + "/details.txt"
