@@ -1,9 +1,34 @@
 from flask import render_template,url_for,flash,redirect,request,Blueprint
-from julia_blog import db
+from julia_blog import db,engine
 from flask_login import current_user,login_required
+from sqlalchemy import and_
 from julia_blog.models import budget_group_analysis
 from julia_blog.YNAB_files.YNAB_API_GroupReporting import group_analysis,category_analysis
 from julia_blog.YNAB_files.YNAB_API_pacing import pacing_report
+from sqlalchemy import create_engine, Integer, String
+
+group_analysis_sql = group_analysis.to_sql(
+    'group_analysis',
+    engine,if_exists='replace',index=False,chunksize=500,
+    dtype={
+        "user_id": Integer,
+        "category_group_name": String(50),
+        "spending_this_month": Integer,
+        "spending_this_month_perc": Integer,
+        "spending_last_month":  Integer,
+        "spending_last_month_perc": Integer,
+        "budgeting_this_month": Integer,
+        "budgeting_this_month_perc": Integer,
+        "budgeting_last_month": Integer,
+        "budgeting_last_month_perc": Integer,
+        "spending_diff_mom": Integer,
+        "budgeting_diff_mom": Integer,
+        "ideal_contribution": Integer,
+        "ideal_contribution_perc": Integer,
+        "budgeting_diff_mom": Integer,
+        "spending_3m_diff": Integer,
+        "budgeting_3m_diff": Integer })
+
 
 budgets = Blueprint('budgets',__name__)
 
@@ -17,60 +42,32 @@ def budget():
 @budgets.route('/budget/reporting')
 @login_required
 def reporting():
-    #rows = budget_group_analysis.query.all()
-    #user_id = current_user.id
-    for x in range(len(group_analysis)):
-        #setattr(user, 'no_of_logins', user.no_of_logins + 1)
-        #session.commit()
-        rows = budget_group_analysis.query.filter_by(user_id=current_user.id).all()
-        setattr(group_analysis['category_group_name'][x],'spending_this_month',group_analysis['spending_this_month'][x])
-        setattr(group_analysis['category_group_name'][x],'spending_this_month_perc',group_analysis['spending_this_month_perc'][x])
-        setattr(group_analysis['category_group_name'][x],'spending_last_month',group_analysis['spending_last_month'][x])
-        setattr(group_analysis['category_group_name'][x],'spending_last_month_perc',group_analysis['spending_last_month_perc'][x])
-        setattr(group_analysis['category_group_name'][x],'budgeting_this_month',group_analysis['budgeting_this_month'][x])
-        setattr(group_analysis['category_group_name'][x],'budgeting_this_month_perc',group_analysis['budgeting_this_month_perc'][x])
-        setattr(group_analysis['category_group_name'][x],'budgeting_last_month',group_analysis['budgeting_last_month'][x])
-        setattr(group_analysis['category_group_name'][x],'budgeting_last_month_perc',group_analysis['budgeting_last_month_perc'][x])
-        setattr(group_analysis['category_group_name'][x],'spending_diff_mom',group_analysis['spending_diff_mom'][x])
-        setattr(group_analysis['category_group_name'][x],'budgeting_diff_mom',group_analysis['budgeting_diff_mom'][x])
-        setattr(group_analysis['category_group_name'][x],'ideal_contribution',group_analysis['ideal_contribution'][x])
-        setattr(group_analysis['category_group_name'][x],'ideal_contribution_perc',group_analysis['ideal_contribution_perc'][x])
-        setattr(group_analysis['category_group_name'][x],'spending_3m_diff',group_analysis['spending_3m_diff'][x])
-        setattr(group_analysis['category_group_name'][x],'budgeting_3m_diff',group_analysis['budgeting_3m_diff'][x])
-#        category_group_name = group_analysis['category_group_name'][x]
-#        spending_this_month = group_analysis['spending_this_month'][x]
-#        spending_this_month_perc = group_analysis['spending_this_month_perc'][x]
-#        spending_last_month = group_analysis['spending_last_month'][x]
-#        spending_last_month_perc = group_analysis['spending_last_month_perc'][x]
-#        budgeting_this_month = group_analysis['budgeting_this_month'][x]
-#        budgeting_this_month_perc = group_analysis['budgeting_this_month_perc'][x]
-#        budgeting_last_month = group_analysis['budgeting_last_month'][x]
-#        budgeting_last_month_perc = group_analysis['budgeting_last_month_perc'][x]
-#        spending_diff_mom = group_analysis['spending_diff_mom'][x]
-#        budgeting_diff_mom = group_analysis['budgeting_diff_mom'][x]
-#        ideal_contribution = group_analysis['ideal_contribution'][x]
-#        ideal_contribution_perc = group_analysis['ideal_contribution_perc'][x]
-#        spending_3m_diff = group_analysis['spending_3m_diff'][x]
-#        budgeting_3m_diff = group_analysis['budgeting_3m_diff'][x]
-#        record = budget_group_analysis(category_group_name,spending_this_month,spending_this_month_perc,spending_last_month,spending_last_month_perc,budgeting_this_month,budgeting_this_month_perc,budgeting_last_month,budgeting_last_month_perc,spending_diff_mom, budgeting_diff_mom, ideal_contribution, ideal_contribution_perc, spending_3m_diff, budgeting_3m_diff,user_id)
-#        db.session.add(record)
-        db.session.commit()
-    rows = budget_group_analysis.query.all()
-#    return render_template('budget_group_analysis.html',
-#                           title='Category Group Spending',
-#                           rows=rows)
-    # clean table
-    # add rows
-    # represent table
+    #rows = group_analysis_sql.query.all()
+    #return render_template('budget_group_analysis.html',
+    #                       title='Category Group Spending',
+    #                       rows=rows)
 
-    # group_analysis.to_sql(name='group_analysis', con=db.engine, index=False)
-    # for index, row in group_analysis.iterrows():
-    #     group_analysis_add = group_analysis(category_group_name=row[0], spending_this_month=row[1],spending_this_month_perc =row[2],spending_last_month =row[3],spending_last_month_perc =row[4],budgeting_this_month =row[5],budgeting_this_month_perc =row[6],budgeting_last_month =row[7],budgeting_last_month_perc =row[8],spending_diff_mom =row[9],budgeting_diff_mom =row[10],ideal_contribution =row[11],ideal_contribution_perc =row[12] ,spending_3m_diff =row[13] ,budgeting_3m_diff =row[14])
-    #     db.session.add(group_analysis_add)
-    #     db.session.commit()
+    return render_template('budget_reporting.html')
+
+@budgets.route('/budget/reporting/CategoryGroupReporting')
+@login_required
+def groupreporting():
     return render_template('YNAB_API_group_reporting.html')
 
+@budgets.route('/budget/reporting/Pacing')
+@login_required
+def pacing():
+    return render_template('YNAB_API_pacing.html')
 
+@budgets.route('/budget/reporting/SpendingTimeSeries')
+@login_required
+def spending_time_series():
+    return render_template('YNAB_API_lines_S.html')
+
+@budgets.route('/budget/reporting/BudgetingTimeSeries')
+@login_required
+def budgeting_time_series():
+    return render_template('YNAB_API_lines_B.html')
 # Category Grouping Lab
 # Pacing
 # Income Allocation Lab
