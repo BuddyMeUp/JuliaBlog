@@ -17,30 +17,48 @@ def budget():
 @budgets.route('/budget/reporting')
 @login_required
 def reporting():
-    rows = budget_group_analysis.query.all()
+    #rows = budget_group_analysis.query.all()
+    #user_id = current_user.id
     for x in range(len(group_analysis)):
-        category_group_name = group_analysis['category_group_name'][x]
-        spending_this_month = group_analysis['spending_this_month'][x]
-        spending_this_month_perc = group_analysis['spending_this_month_perc'][x]
-        spending_last_month = group_analysis['spending_last_month'][x]
-        spending_last_month_perc = group_analysis['spending_last_month_perc'][x]
-        budgeting_this_month = group_analysis['budgeting_this_month'][x]
-        budgeting_this_month_perc = group_analysis['budgeting_this_month_perc'][x]
-        budgeting_last_month = group_analysis['budgeting_last_month'][x]
-        budgeting_last_month_perc = group_analysis['budgeting_last_month_perc'][x]
-        spending_diff_mom = group_analysis['spending_diff_mom'][x]
-        budgeting_diff_mom = group_analysis['budgeting_diff_mom'][x]
-        ideal_contribution = group_analysis['ideal_contribution'][x]
-        ideal_contribution_perc = group_analysis['ideal_contribution_perc'][x]
-        spending_3m_diff = group_analysis['spending_3m_diff'][x]
-        budgeting_3m_diff = group_analysis['budgeting_3m_diff'][x]
-        record = budget_group_analysis(category_group_name,spending_this_month,spending_this_month_perc,spending_last_month,spending_last_month_perc,budgeting_this_month,budgeting_this_month_perc,budgeting_last_month,budgeting_last_month_perc,spending_diff_mom, budgeting_diff_mom, ideal_contribution, ideal_contribution_perc, spending_3m_diff, budgeting_3m_diff)
-        db.session.add(record)
+        #setattr(user, 'no_of_logins', user.no_of_logins + 1)
+        #session.commit()
+        rows = budget_group_analysis.query.filter_by(user_id=current_user.id).all()
+        setattr(group_analysis['category_group_name'][x],'spending_this_month',group_analysis['spending_this_month'][x])
+        setattr(group_analysis['category_group_name'][x],'spending_this_month_perc',group_analysis['spending_this_month_perc'][x])
+        setattr(group_analysis['category_group_name'][x],'spending_last_month',group_analysis['spending_last_month'][x])
+        setattr(group_analysis['category_group_name'][x],'spending_last_month_perc',group_analysis['spending_last_month_perc'][x])
+        setattr(group_analysis['category_group_name'][x],'budgeting_this_month',group_analysis['budgeting_this_month'][x])
+        setattr(group_analysis['category_group_name'][x],'budgeting_this_month_perc',group_analysis['budgeting_this_month_perc'][x])
+        setattr(group_analysis['category_group_name'][x],'budgeting_last_month',group_analysis['budgeting_last_month'][x])
+        setattr(group_analysis['category_group_name'][x],'budgeting_last_month_perc',group_analysis['budgeting_last_month_perc'][x])
+        setattr(group_analysis['category_group_name'][x],'spending_diff_mom',group_analysis['spending_diff_mom'][x])
+        setattr(group_analysis['category_group_name'][x],'budgeting_diff_mom',group_analysis['budgeting_diff_mom'][x])
+        setattr(group_analysis['category_group_name'][x],'ideal_contribution',group_analysis['ideal_contribution'][x])
+        setattr(group_analysis['category_group_name'][x],'ideal_contribution_perc',group_analysis['ideal_contribution_perc'][x])
+        setattr(group_analysis['category_group_name'][x],'spending_3m_diff',group_analysis['spending_3m_diff'][x])
+        setattr(group_analysis['category_group_name'][x],'budgeting_3m_diff',group_analysis['budgeting_3m_diff'][x])
+#        category_group_name = group_analysis['category_group_name'][x]
+#        spending_this_month = group_analysis['spending_this_month'][x]
+#        spending_this_month_perc = group_analysis['spending_this_month_perc'][x]
+#        spending_last_month = group_analysis['spending_last_month'][x]
+#        spending_last_month_perc = group_analysis['spending_last_month_perc'][x]
+#        budgeting_this_month = group_analysis['budgeting_this_month'][x]
+#        budgeting_this_month_perc = group_analysis['budgeting_this_month_perc'][x]
+#        budgeting_last_month = group_analysis['budgeting_last_month'][x]
+#        budgeting_last_month_perc = group_analysis['budgeting_last_month_perc'][x]
+#        spending_diff_mom = group_analysis['spending_diff_mom'][x]
+#        budgeting_diff_mom = group_analysis['budgeting_diff_mom'][x]
+#        ideal_contribution = group_analysis['ideal_contribution'][x]
+#        ideal_contribution_perc = group_analysis['ideal_contribution_perc'][x]
+#        spending_3m_diff = group_analysis['spending_3m_diff'][x]
+#        budgeting_3m_diff = group_analysis['budgeting_3m_diff'][x]
+#        record = budget_group_analysis(category_group_name,spending_this_month,spending_this_month_perc,spending_last_month,spending_last_month_perc,budgeting_this_month,budgeting_this_month_perc,budgeting_last_month,budgeting_last_month_perc,spending_diff_mom, budgeting_diff_mom, ideal_contribution, ideal_contribution_perc, spending_3m_diff, budgeting_3m_diff,user_id)
+#        db.session.add(record)
         db.session.commit()
     rows = budget_group_analysis.query.all()
-    return render_template('budget_group_analysis.html',
-                           title='Category Group Spending',
-                           rows=rows)
+#    return render_template('budget_group_analysis.html',
+#                           title='Category Group Spending',
+#                           rows=rows)
     # clean table
     # add rows
     # represent table
@@ -51,3 +69,8 @@ def reporting():
     #     db.session.add(group_analysis_add)
     #     db.session.commit()
     return render_template('YNAB_API_group_reporting.html')
+
+
+# Category Grouping Lab
+# Pacing
+# Income Allocation Lab

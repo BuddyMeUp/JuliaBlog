@@ -15,7 +15,6 @@ class User(db.Model, UserMixin):
     # Create a table in the db
     __tablename__ = 'users'
 
-
     id = db.Column(db.Integer, primary_key = True)
     profile_image = db.Column(db.String(20), nullable=False, default='default_profile.png')
     email = db.Column(db.String(64), unique=True, index=True)
@@ -84,6 +83,8 @@ class BlogPost(db.Model ):
         return f"Blog {self.blog_title} is {self.id}."
 
 class budget_group_analysis(db.Model):
+    users = db.relationship(User)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     category_group_name = db.Column(db.String(64),nullable=False,unique=True,index=True,primary_key=True)
     spending_this_month = db.Column(db.Float)
     spending_this_month_perc = db.Column(db.Float)
@@ -100,7 +101,9 @@ class budget_group_analysis(db.Model):
     spending_3m_diff = db.Column(db.Float)
     budgeting_3m_diff = db.Column(db.Float)
 
-    def __init__(self,category_group_name,spending_this_month,spending_this_month_perc,spending_last_month,spending_last_month_perc,budgeting_this_month,budgeting_this_month_perc,budgeting_last_month,budgeting_last_month_perc,spending_diff_mom,budgeting_diff_mom,ideal_contribution,ideal_contribution_perc,spending_3m_diff,budgeting_3m_diff):
+    def __init__(self, category_group_name, spending_this_month, spending_this_month_perc, spending_last_month, spending_last_month_perc, budgeting_this_month, budgeting_this_month_perc,
+                 budgeting_last_month, budgeting_last_month_perc, spending_diff_mom, budgeting_diff_mom, ideal_contribution, ideal_contribution_perc, spending_3m_diff, budgeting_3m_diff,
+                 user_id):
         self.category_group_name = category_group_name
         self.spending_this_month = spending_this_month
         self.spending_this_month_perc=spending_this_month_perc
@@ -116,11 +119,13 @@ class budget_group_analysis(db.Model):
         self.ideal_contribution_perc=ideal_contribution_perc
         self.spending_3m_diff = spending_3m_diff
         self.budgeting_3m_diff=budgeting_3m_diff
-
+        self.user_id=user_id
 
 
 
 class budget_category_analysis(db.Model):
+    users = db.relationship(User)
+    user_id_number = db.Column(db.Integer, db.ForeignKey('users.id'))
     category_name = db.Column(db.String(64),nullable=False,unique=True,index=True,primary_key=True)
     spending_this_month = db.Column(db.Float)
     spending_this_month_perc = db.Column(db.Float)
@@ -137,7 +142,7 @@ class budget_category_analysis(db.Model):
     spending_3m_diff = db.Column(db.Float)
     budgeting_3m_diff = db.Column(db.Float)
 
-    def __init__(self,category_group_name,spending_this_month,spending_this_month_perc,spending_last_month,spending_last_month_perc,budgeting_this_month,budgeting_this_month_perc,budgeting_last_month,budgeting_last_month_perc,spending_diff_mom,budgeting_diff_mom,ideal_contribution,ideal_contribution_perc,spending_3m_diff,budgeting_3m_diff):
+    def __init__(self,category_group_name,spending_this_month,spending_this_month_perc,spending_last_month,spending_last_month_perc,budgeting_this_month,budgeting_this_month_perc,budgeting_last_month,budgeting_last_month_perc,spending_diff_mom,budgeting_diff_mom,ideal_contribution,ideal_contribution_perc,spending_3m_diff,budgeting_3m_diff,user_id):
         self.category_group_name = category_group_name
         self.spending_this_month = spending_this_month
         self.spending_this_month_perc=spending_this_month_perc
@@ -153,9 +158,12 @@ class budget_category_analysis(db.Model):
         self.ideal_contribution_perc=ideal_contribution_perc
         self.spending_3m_diff = spending_3m_diff
         self.budgeting_3m_diff=budgeting_3m_diff
+        self.user_id_number=user_id
 
 
 class budget_pacing(db.Model):
+    users = db.relationship(User)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     category_name = db.Column(db.String(64),nullable=False,unique=True,index=True,primary_key=True)
     category_group_name = db.Column(db.String(64))
     activity = db.Column(db.Float)
@@ -170,7 +178,7 @@ class budget_pacing(db.Model):
     transaction_amount_change_perc = db.Column(db.Float)
     transaction_count = db.Column(db.Integer)
 
-    def __init__(self,category_group_name,category_name,activity,paced_ideal_spend,daily_amount_target,daily_amount_left,pacing,pacing_perc,average_transaction_amount,transactions_left,month_progress,transaction_amount_change_perc,transaction_count):
+    def __init__(self,category_group_name,category_name,activity,paced_ideal_spend,daily_amount_target,daily_amount_left,pacing,pacing_perc,average_transaction_amount,transactions_left,month_progress,transaction_amount_change_perc,transaction_count,user_id):
         self.category_group_name = category_group_name
         self.category_name = category_name
         self.activity=activity
@@ -184,9 +192,12 @@ class budget_pacing(db.Model):
         self.month_progress=month_progress
         self.transaction_amount_change_perc = transaction_amount_change_perc
         self.transaction_count=transaction_count
+        self.user_id=user_id
 
 
 class user_input(db.Model):
+    users = db.relationship(User)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     category_id = db.Column(db.String(64),nullable=False,unique=True,index=True,primary_key=True)
     category_group_id = db.Column(db.String(64))
     category_name = db.Column(db.String(64))
@@ -197,7 +208,7 @@ class user_input(db.Model):
     fix_cat = db.Column(db.Float)
     cat_group_order = db.Column(db.Integer)
 
-    def __init__(self,category_id,category_group_id,category_name,category_group_name,ideal_contribution,max_amount,savings_contr,fix_cat,cat_group_order):
+    def __init__(self,category_id,category_group_id,category_name,category_group_name,ideal_contribution,max_amount,savings_contr,fix_cat,cat_group_order,user_id):
         self.category_group_name = category_group_name
         self.category_name = category_name
         self.category_id=category_id
@@ -207,6 +218,7 @@ class user_input(db.Model):
         self.savings_contr=savings_contr
         self.fix_cat = fix_cat
         self.cat_group_order=cat_group_order
+        self.user_id=user_id
 
 
 # db steps:
