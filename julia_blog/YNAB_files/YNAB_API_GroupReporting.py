@@ -146,6 +146,13 @@ category_analysis.reset_index(inplace=True)
 category_analysis.fillna(0,inplace=True)
 category_analysis.drop('index',axis=1,inplace=True)
 #
+
+for x in range(len(group_analysis['category_group_name'])):
+    print (group_analysis['category_group_name'][x])
+    for y in group_analysis.columns:
+        print(group_analysis[y][x])
+
+
 # output = emoji_pattern.sub(r'', group_analysis.to_html())
 # output = output.replace(u'\U0001F3A2','')
 # output = output.replace(u'\U0001f7e1','')

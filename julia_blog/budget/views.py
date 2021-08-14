@@ -1,10 +1,10 @@
 from flask import render_template,url_for,flash,redirect,request,Blueprint
 from julia_blog import db,engine
 from flask_login import current_user,login_required
-from sqlalchemy import and_
-from julia_blog.models import budget_group_analysis
+import os
+from julia_blog.models import budget_group_analysis,budget_category_analysis
 from julia_blog.YNAB_files.YNAB_API_GroupReporting import group_analysis,category_analysis
-from julia_blog.YNAB_files.YNAB_API_pacing import pacing_report
+from julia_blog.YNAB_files.YNAB_API_pacing import pacing_report,emoji_pattern
 from sqlalchemy import create_engine, Integer, String
 
 group_analysis_sql = group_analysis.to_sql(
@@ -42,21 +42,54 @@ def budget():
 @budgets.route('/budget/reporting')
 @login_required
 def reporting():
-    #rows = group_analysis_sql.query.all()
-    #return render_template('budget_group_analysis.html',
-    #                       title='Category Group Spending',
-    #                       rows=rows)
-
     return render_template('budget_reporting.html')
 
 @budgets.route('/budget/reporting/CategoryGroupReporting')
 @login_required
 def groupreporting():
+    # fill budget group analysis .html fie manually
+    html_string = """{% extends "base.html" %} {% block content %} <div class="container">  <div class="jumbotron">
+    <div align='center'>      <h1 >Budget Overview by Category Groups</h1>
+    </div>  </div><table border="1" class="table table-striped table-hover>  <thead>
+    <tr style="text-align: right;">            <th>category_group_name</th>
+      <th>spending_this_month</th>      <th>spending_this_month%</th>      <th>spending_last_month</th>      <th>spending_last_month%</th>
+      <th>budgeting_this_month</th>      <th>budgeting_this_month%</th>      <th>budgeting_last_month</th>      <th>budgeting_last_month%</th>      <th>spending_diff_mom</th>
+      <th>budgeting_diff_mom</th>      <th>ideal_contribution</th>      <th>ideal_contribution%</th>      <th>spending_3m_diff</th>      <th>budgeting_3m_diff</th>    </tr>
+  </thead>  <tbody>    <div class="container">"""
+    for x in range(len(group_analysis['category_group_name'])):
+        html_string += "<tr>"
+        for y in group_analysis.columns:
+            html_string += "<td>"
+            html_string += str(group_analysis[y][x])
+            html_string += "</td>"
+
+        html_string += "</tr>"
+    html_string += "  </tbody></table></div></div>{% endblock content %}"
+    html_string = emoji_pattern.sub(r'', html_string)
+    html_string = html_string.replace(u'\U0001F3A2','')
+    html_string = html_string.replace(u'\U0001f7e1','')
+    html_string = html_string.replace(u'\U0001f9f7','')
+    html_string = html_string.replace(u'\U0001f9af','')
+    html_string = html_string.replace(u'\u26ea','')
+    html_string = html_string.replace(u'\u2016', '')
+    html_string = html_string.replace(u'\U0001f7e2','')
+    html_string = html_string.replace(u'\U0001f3a2','')
+    html_string = html_string.replace('class="dataframe"','class="table table-striped table-hover')
+    html_string = str(html_string.encode('utf-8').strip())
+    path_parent = os.path.dirname(os.getcwd())
+    with open(path_parent+"/JuliaBlog/julia_blog/templates/budget_group_analysis.html", "w") as file_object:
+        file_object.write( html_string)
     return render_template('budget_group_analysis.html',
-                           title='Category Group Spending',
+                           title='Category Group Spending')
+
+@budgets.route('/budget/reporting/CategoryReporting')
+@login_required
+def categoryreporting():
+    rows = budget_category_analysis.query.all()
+    return render_template('budget_category_analysis.html',
+                           title='Category Spending',
                            rows=rows)
 #    return render_template('YNAB_API_group_reporting.html')
-
 
 @budgets.route('/budget/reporting/Pacing')
 @login_required
@@ -72,6 +105,7 @@ def spending_time_series():
 @login_required
 def budgeting_time_series():
     return render_template('YNAB_API_lines_B.html')
+
 # Category Grouping Lab
 # Pacing
 # Income Allocation Lab
