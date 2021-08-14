@@ -17,61 +17,62 @@ def budget():
 @budgets.route('/budget/reporting')
 @login_required
 def reporting():
-    #rows = budget_group_analysis.query.all()
-    #user_id = current_user.id
-    for x in range(len(group_analysis)):
-        #setattr(user, 'no_of_logins', user.no_of_logins + 1)
-        #session.commit()
-        rows = budget_group_analysis.query.filter_by(user_id=current_user.id).all()
-        setattr(group_analysis['category_group_name'][x],'spending_this_month',group_analysis['spending_this_month'][x])
-        setattr(group_analysis['category_group_name'][x],'spending_this_month_perc',group_analysis['spending_this_month_perc'][x])
-        setattr(group_analysis['category_group_name'][x],'spending_last_month',group_analysis['spending_last_month'][x])
-        setattr(group_analysis['category_group_name'][x],'spending_last_month_perc',group_analysis['spending_last_month_perc'][x])
-        setattr(group_analysis['category_group_name'][x],'budgeting_this_month',group_analysis['budgeting_this_month'][x])
-        setattr(group_analysis['category_group_name'][x],'budgeting_this_month_perc',group_analysis['budgeting_this_month_perc'][x])
-        setattr(group_analysis['category_group_name'][x],'budgeting_last_month',group_analysis['budgeting_last_month'][x])
-        setattr(group_analysis['category_group_name'][x],'budgeting_last_month_perc',group_analysis['budgeting_last_month_perc'][x])
-        setattr(group_analysis['category_group_name'][x],'spending_diff_mom',group_analysis['spending_diff_mom'][x])
-        setattr(group_analysis['category_group_name'][x],'budgeting_diff_mom',group_analysis['budgeting_diff_mom'][x])
-        setattr(group_analysis['category_group_name'][x],'ideal_contribution',group_analysis['ideal_contribution'][x])
-        setattr(group_analysis['category_group_name'][x],'ideal_contribution_perc',group_analysis['ideal_contribution_perc'][x])
-        setattr(group_analysis['category_group_name'][x],'spending_3m_diff',group_analysis['spending_3m_diff'][x])
-        setattr(group_analysis['category_group_name'][x],'budgeting_3m_diff',group_analysis['budgeting_3m_diff'][x])
-#        category_group_name = group_analysis['category_group_name'][x]
-#        spending_this_month = group_analysis['spending_this_month'][x]
-#        spending_this_month_perc = group_analysis['spending_this_month_perc'][x]
-#        spending_last_month = group_analysis['spending_last_month'][x]
-#        spending_last_month_perc = group_analysis['spending_last_month_perc'][x]
-#        budgeting_this_month = group_analysis['budgeting_this_month'][x]
-#        budgeting_this_month_perc = group_analysis['budgeting_this_month_perc'][x]
-#        budgeting_last_month = group_analysis['budgeting_last_month'][x]
-#        budgeting_last_month_perc = group_analysis['budgeting_last_month_perc'][x]
-#        spending_diff_mom = group_analysis['spending_diff_mom'][x]
-#        budgeting_diff_mom = group_analysis['budgeting_diff_mom'][x]
-#        ideal_contribution = group_analysis['ideal_contribution'][x]
-#        ideal_contribution_perc = group_analysis['ideal_contribution_perc'][x]
-#        spending_3m_diff = group_analysis['spending_3m_diff'][x]
-#        budgeting_3m_diff = group_analysis['budgeting_3m_diff'][x]
-#        record = budget_group_analysis(category_group_name,spending_this_month,spending_this_month_perc,spending_last_month,spending_last_month_perc,budgeting_this_month,budgeting_this_month_perc,budgeting_last_month,budgeting_last_month_perc,spending_diff_mom, budgeting_diff_mom, ideal_contribution, ideal_contribution_perc, spending_3m_diff, budgeting_3m_diff,user_id)
-#        db.session.add(record)
-        db.session.commit()
-    rows = budget_group_analysis.query.all()
-#    return render_template('budget_group_analysis.html',
-#                           title='Category Group Spending',
-#                           rows=rows)
-    # clean table
-    # add rows
-    # represent table
-
-    # group_analysis.to_sql(name='group_analysis', con=db.engine, index=False)
-    # for index, row in group_analysis.iterrows():
-    #     group_analysis_add = group_analysis(category_group_name=row[0], spending_this_month=row[1],spending_this_month_perc =row[2],spending_last_month =row[3],spending_last_month_perc =row[4],budgeting_this_month =row[5],budgeting_this_month_perc =row[6],budgeting_last_month =row[7],budgeting_last_month_perc =row[8],spending_diff_mom =row[9],budgeting_diff_mom =row[10],ideal_contribution =row[11],ideal_contribution_perc =row[12] ,spending_3m_diff =row[13] ,budgeting_3m_diff =row[14])
-    #     db.session.add(group_analysis_add)
-    #     db.session.commit()
-    return render_template('YNAB_API_group_reporting.html')
+    return render_template('budget_group_analysis.html',
+                           title='Category Group Spending',
+                           rows=rows)
+#    return render_template('YNAB_API_group_reporting.html')
 
 
 # Category Grouping Lab
 # Pacing
 # Income Allocation Lab
 # budget ID & Key to be set during login? on the budget screen?
+
+#table per analysis type
+#form to enter budget_id
+
+"""
+
+@budgets.route("/reporting")
+def reporting():
+    form = budget_form()
+    conn = db.connect(budget_group_analysis)
+
+    c = conn.cursor()
+    c.execute('''SELECT count(name) FROM sqlite_master WHERE name='%s' AND type='table' ''' % table_name)
+
+    if (c.fetchone()[0] == 0):
+
+        conn.execute(
+            '''CREATE TABLE '%s' (names TEXT,  reviewerLink TEXT, reviewTitles TEXT, reviewBody TEXT, verifiedPurchase TEXT, postDate TEXT, starRating TEXT, helpful TEXT, nextPage TEXT)''' % table_name)
+
+        for x in output_data:
+            c.execute(
+                '''INSERT INTO '%s' (names, reviewerLink, reviewTitles, reviewBody, verifiedPurchase, postDate, starRating, helpful, nextPage) VALUES (?,?,?,?,?,?,?,?,?)''' % table_name,
+                (
+                x["names"], x["reviewerLink"], x["reviewTitles"], x["reviewBody"], x["verifiedPurchase"], x["postDate"],
+                x["starRating"], x["helpful"], x["nextPage"]))
+
+        conn.commit()
+        conn.close()
+
+        print("Table and Records created Successfully!")
+
+
+    else:  # The code will come here if it doesn't find the URL data in DB
+        conn.row_factory = sql.Row
+        cur = conn.cursor()
+        cur.execute(''' SELECT * from '%s' ''' % table_name)
+
+        rows = cur.fetchall()
+        output_data = ([dict(i) for i in rows])
+
+        conn.close()
+
+        print("Data Fetched Successfully!")
+
+    return render_template('budget_group_analysis.html',
+                           title='Category Group Spending',
+                           rows=rows)
+
+"""
