@@ -7,27 +7,39 @@ from julia_blog.YNAB_files.YNAB_API_GroupReporting import group_analysis,categor
 from julia_blog.YNAB_files.YNAB_API_pacing import pacing_report,emoji_pattern
 from sqlalchemy import create_engine, Integer, String
 
-group_analysis_sql = group_analysis.to_sql(
-    'group_analysis',
-    engine,if_exists='replace',index=False,chunksize=500,
-    dtype={
-        "user_id": Integer,
-        "category_group_name": String(50),
-        "spending_this_month": Integer,
-        "spending_this_month_perc": Integer,
-        "spending_last_month":  Integer,
-        "spending_last_month_perc": Integer,
-        "budgeting_this_month": Integer,
-        "budgeting_this_month_perc": Integer,
-        "budgeting_last_month": Integer,
-        "budgeting_last_month_perc": Integer,
-        "spending_diff_mom": Integer,
-        "budgeting_diff_mom": Integer,
-        "ideal_contribution": Integer,
-        "ideal_contribution_perc": Integer,
-        "budgeting_diff_mom": Integer,
-        "spending_3m_diff": Integer,
-        "budgeting_3m_diff": Integer })
+def html_change(html_string):
+    html_string = emoji_pattern.sub(r'', html_string)
+    html_string = html_string.replace(u'\U0001F3A2', '')
+    html_string = html_string.replace(u'\U0001f7e1', '')
+    html_string = html_string.replace(u'\U0001f9f7', '')
+    html_string = html_string.replace(u'\U0001f9af', '')
+    html_string = html_string.replace(u'\u26ea', '')
+    html_string = html_string.replace(u'\u2016', '')
+    html_string = html_string.replace(u'\U0001f7e2', '')
+    html_string = html_string.replace(u'\U0001f3a2', '')
+
+
+# group_analysis_sql = group_analysis.to_sql(
+#     'group_analysis',
+#     engine,if_exists='replace',index=False,chunksize=500,
+#     dtype={
+#         "user_id": Integer,
+#         "category_group_name": String(50),
+#         "spending_this_month": Integer,
+#         "spending_this_month_perc": Integer,
+#         "spending_last_month":  Integer,
+#         "spending_last_month_perc": Integer,
+#         "budgeting_this_month": Integer,
+#         "budgeting_this_month_perc": Integer,
+#         "budgeting_last_month": Integer,
+#         "budgeting_last_month_perc": Integer,
+#         "spending_diff_mom": Integer,
+#         "budgeting_diff_mom": Integer,
+#         "ideal_contribution": Integer,
+#         "ideal_contribution_perc": Integer,
+#         "budgeting_diff_mom": Integer,
+#         "spending_3m_diff": Integer,
+#         "budgeting_3m_diff": Integer })
 
 
 budgets = Blueprint('budgets',__name__)
@@ -47,7 +59,6 @@ def reporting():
 @budgets.route('/budget/reporting/CategoryGroupReporting')
 @login_required
 def groupreporting():
-    # fill budget group analysis .html fie manually
     html_string = """{% extends "base.html" %} {% block content %} <div class="container">  <div class="jumbotron">
     <div align='center'>      <h1 >Budget Overview by Category Groups</h1>
     </div>  </div><table border="1" class="table table-striped table-hover>  <thead>
@@ -66,14 +77,7 @@ def groupreporting():
         html_string += "</tr>"
     html_string += "  </tbody></table></div></div>{% endblock content %}"
     html_string = emoji_pattern.sub(r'', html_string)
-    html_string = html_string.replace(u'\U0001F3A2','')
-    html_string = html_string.replace(u'\U0001f7e1','')
-    html_string = html_string.replace(u'\U0001f9f7','')
-    html_string = html_string.replace(u'\U0001f9af','')
-    html_string = html_string.replace(u'\u26ea','')
-    html_string = html_string.replace(u'\u2016', '')
-    html_string = html_string.replace(u'\U0001f7e2','')
-    html_string = html_string.replace(u'\U0001f3a2','')
+    html_change(html_string)
     html_string = html_string.replace('class="dataframe"','class="table table-striped table-hover')
     html_string = str(html_string.encode('utf-8').strip())
     path_parent = os.path.dirname(os.getcwd())
@@ -85,11 +89,34 @@ def groupreporting():
 @budgets.route('/budget/reporting/CategoryReporting')
 @login_required
 def categoryreporting():
-    rows = budget_category_analysis.query.all()
+    html_string = """{% extends "base.html" %} {% block content %} <div class="container">  <div class="jumbotron">
+      <div align='center'>      <h1 >Budget Overview by Category Groups</h1>
+      </div>  </div><table border="1" class="table table-striped table-hover>  <thead>
+      <tr style="text-align: right;">            <th>category_group_name</th>
+        <th>spending_this_month</th>      <th>spending_this_month%</th>      <th>spending_last_month</th>      <th>spending_last_month%</th>
+        <th>budgeting_this_month</th>      <th>budgeting_this_month%</th>      <th>budgeting_last_month</th>      <th>budgeting_last_month%</th>      <th>spending_diff_mom</th>
+        <th>budgeting_diff_mom</th>      <th>ideal_contribution</th>      <th>ideal_contribution%</th>      <th>spending_3m_diff</th>      <th>budgeting_3m_diff</th>    </tr>
+    </thead>  <tbody>    <div class="container">"""
+    for x in range(len(category_analysis['category_name'])):
+        html_string += "<tr>"
+        for y in category_analysis.columns:
+            html_string += "<td>"
+            html_string += str(category_analysis[y][x])
+            html_string += "</td>"
+
+        html_string += "</tr>"
+    html_string += "  </tbody></table></div></div>{% endblock content %}"
+    html_string = emoji_pattern.sub(r'', html_string)
+    html_change(html_string)
+    html_string = html_string.replace('class="dataframe"', 'class="table table-striped table-hover')
+    html_string = str(html_string.encode('utf-8').strip())
+    path_parent = os.path.dirname(os.getcwd())
+    with open(path_parent + "/JuliaBlog/julia_blog/templates/budget_category_analysis.html", "w") as file_object:
+        file_object.write(html_string)
+
     return render_template('budget_category_analysis.html',
-                           title='Category Spending',
-                           rows=rows)
-#    return render_template('YNAB_API_group_reporting.html')
+                           title='Category Spending')
+
 
 @budgets.route('/budget/reporting/Pacing')
 @login_required
