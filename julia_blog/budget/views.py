@@ -103,12 +103,10 @@ def categoryreporting():
             html_string += "<td>"
             html_string += str(category_analysis[y][x])
             html_string += "</td>"
-
         html_string += "</tr>"
     html_string += "  </tbody></table></div></div>{% endblock content %}"
     html_string = emoji_pattern.sub(r'', html_string)
     html_change(html_string)
-    html_string = html_string.replace('class="dataframe"', 'class="table table-striped table-hover')
     html_string = str(html_string.encode('utf-8').strip())
     path_parent = os.path.dirname(os.getcwd())
     with open(path_parent + "/JuliaBlog/julia_blog/templates/budget_category_analysis.html", "w") as file_object:
@@ -121,7 +119,34 @@ def categoryreporting():
 @budgets.route('/budget/reporting/Pacing')
 @login_required
 def pacing():
-    return render_template('YNAB_API_pacing.html')
+    html_string = """{% extends "base.html" %} {% block content %} <div class="container">  <div class="jumbotron">
+      <div align='center'>      <h1 >Current Month Pacing</h1>
+      </div>  </div><table border="1" class="table table-striped table-hover>  <thead>
+      <tr style="text-align: right;">                 <th>category_group_name</th>
+      <th>category_name</th>      <th>activity</th>
+      <th>paced_ideal_spend</th>      <th>daily_amount_target</th>
+      <th>daily_amount_left</th>      <th>pacing</th>
+      <th>pacing_perc</th>      <th>average_transaction_amount</th>
+      <th>transactions_left</th>      <th>month_progress</th>
+      <th>transaction_amount_change%</th>      <th>transaction_count</th>    </tr>
+    </thead>  <tbody>    <div class="container">"""
+    for x in range(len(pacing_report['category_group_name'])):
+        html_string += "<tr>"
+        for y in pacing_report.columns:
+            html_string += "<td>"
+            html_string += str(pacing_report[y][x])
+            html_string += "</td>"
+
+        html_string += "</tr>"
+    html_string += "  </tbody></table></div></div>{% endblock content %}"
+    html_string = emoji_pattern.sub(r'', html_string)
+    html_change(html_string)
+    html_string = str(html_string.encode('utf-8').strip())
+    path_parent = os.path.dirname(os.getcwd())
+    with open(path_parent + "/JuliaBlog/julia_blog/templates/budget_pacing.html", "w") as file_object:
+        file_object.write(html_string)
+    return render_template('budget_pacing.html',
+                           title='Category Pacing')
 
 @budgets.route('/budget/reporting/SpendingTimeSeries')
 @login_required
