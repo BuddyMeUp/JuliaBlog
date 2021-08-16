@@ -5,6 +5,7 @@ import os
 from julia_blog.models import budget_group_analysis,budget_category_analysis
 from julia_blog.YNAB_files.YNAB_API_GroupReporting import group_analysis,category_analysis
 from julia_blog.YNAB_files.YNAB_API_pacing import pacing_report,emoji_pattern
+from julia_blog.YNAB_files.YNAB_API_lines import groups,months,ALL_active_month_cats_spending,ALL_active_month_cats_budgeting
 from sqlalchemy import create_engine, Integer, String
 
 def html_change(html_string):
@@ -90,7 +91,7 @@ def groupreporting():
 @login_required
 def categoryreporting():
     html_string = """{% extends "base.html" %} {% block content %} <div class="container">  <div class="jumbotron">
-      <div align='center'>      <h1 >Budget Overview by Category Groups</h1>
+      <div align='center'>      <h1 >Budget Overview by Categories</h1>
       </div>  </div><table border="1" class="table table-striped table-hover>  <thead>
       <tr style="text-align: right;">            <th>category_group_name</th>
         <th>spending_this_month</th>      <th>spending_this_month%</th>      <th>spending_last_month</th>      <th>spending_last_month%</th>
@@ -151,7 +152,49 @@ def pacing():
 @budgets.route('/budget/reporting/SpendingTimeSeries')
 @login_required
 def spending_time_series():
-    return render_template('YNAB_API_lines_S.html')
+    html_file = """<!DOCTYPE HTML><html><head><script>window.onload = function () {var chart = new CanvasJS.Chart("chartContainer", {
+	title: {text: "Spending over time"},axisX: {valueFormatString: "MMM YYYY"},
+	axisY: {title: "Amount Spent",prefix: "",suffix: ""},toolTip: {shared: true},legend: {cursor: "pointer",verticalAlign: "top",horizontalAlign: "center",dockInsidePlotArea: true,itemclick: toogleDataSeries},
+	data: ["""
+    for x in groups:
+        html_file += """
+    	{type:"line",axisYType: "primary",name: """
+        html_file += "'"
+        html_file += x
+        html_file += "'"
+        html_file += """,showInLegend: true,markerSize: 0,yValueFormatString: "",dataPoints: 
+    	["""
+        for y in months:
+            html_file += """
+    	        { x: new Date("""
+            html_file += str(y[:4])
+            html_file += ", "
+            html_file += str(int(y[5:7]) - 1)
+            html_file += ", 01), y: "
+            if len(ALL_active_month_cats_spending['activity'].loc[(
+                    (ALL_active_month_cats_spending['category_group_name'] == x) & (
+                    ALL_active_month_cats_spending['month'] == y))].tolist()) == 0:
+                html_file += "0"
+            else:
+                html_file += str(abs(ALL_active_month_cats_spending['activity'].loc[(
+                            (ALL_active_month_cats_spending['category_group_name'] == x) & (
+                                ALL_active_month_cats_spending['month'] == y))].tolist()[0]))
+            html_file += "},"
+        html_file += "]},"
+    html_file += """]});chart.render();function toogleDataSeries(e){
+	if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		e.dataSeries.visible = false;} else{e.dataSeries.visible = true;}chart.render();}}
+</script></head><body><div id="chartContainer" style="height: 370px; width: 100%;"></div>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script></body></html>"""
+
+    html_string = emoji_pattern.sub(r'', html_file)
+    html_change(html_string)
+    html_string = str(html_string.encode('utf-8').strip())
+    path_parent = os.path.dirname(os.getcwd())
+    with open(path_parent + "/JuliaBlog/julia_blog/templates/budget_line_spending.html", "w") as file_object:
+        file_object.write(html_string)
+    return render_template('budget_line_spending.html',
+                           title='Spending Line Chart')
 
 @budgets.route('/budget/reporting/BudgetingTimeSeries')
 @login_required
@@ -159,7 +202,7 @@ def budgeting_time_series():
     return render_template('YNAB_API_lines_B.html')
 
 # Category Grouping Lab
-# Pacing
+
 # Income Allocation Lab
 # budget ID & Key to be set during login? on the budget screen?
 

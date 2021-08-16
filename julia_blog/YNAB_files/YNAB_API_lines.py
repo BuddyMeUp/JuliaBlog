@@ -9,8 +9,8 @@ import re
 import os
 from dateutil.relativedelta import relativedelta
 import requests
-from YNAB_API_GroupReporting import ALL_active_month_cats,user_group_input,emoji_pattern
-from YNAB_API_pacing import budget,categories,transactions,months,category_groups,user_input,today,active_months
+from julia_blog.YNAB_files.YNAB_API_GroupReporting import ALL_active_month_cats,user_group_input,emoji_pattern
+#from YNAB_API_pacing import budget,categories,transactions,months,category_groups,user_input,today,active_months
 import webbrowser
 pd.options.display.max_rows = 99
 pd.options.display.max_columns = 999
@@ -72,9 +72,9 @@ output = output.replace(u'\u26ea','')
 output = output.replace(u'\U0001f7e2','')
 
 path_parent = os.path.dirname(os.getcwd())
-text_file = open(path_parent+"/templates/YNAB_API_lines_S.html", "w")
-text_file.write(output)
-text_file.close()
+# text_file = open(path_parent+"/templates/YNAB_API_lines_S.html", "w")
+# text_file.write(output)
+# text_file.close()
 
 
 
@@ -124,6 +124,6 @@ output = output.replace(u'\u26ea','')
 output = output.replace(u'\U0001f7e2','')
 
 path_parent = os.path.dirname(os.getcwd())
-text_file = open(path_parent+"/templates/YNAB_API_lines_B.html", "w")
-text_file.write(output)
-text_file.close()
+# text_file = open(path_parent+"/templates/YNAB_API_lines_B.html", "w")
+# text_file.write(output)
+# text_file.close()
